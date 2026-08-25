@@ -1,0 +1,81 @@
+\chapter{Method}\label{chapter:method}
+
+\section{Introduction}
+
+In this chapter we describe the design used to estimate the association between hot temperatures and mortality at the scale of the individual neighbourhood, across all of Canada's major cities. The design applies, without modification, the two-stage small-area framework developed by Gasparrini et al.\ for England and Wales~\citep{gasparrini2022smallarea}, given here for the Canadian substrate. What is new is the substrate the framework is applied to, not the framework itself.
+
+The framework answers one problem: we want a temperature--mortality association for every dissemination area, but a single dissemination area carries too few deaths to fit a model to. Gasparrini et al.\ meet the same constraint at the super-output area scale, and resolve it by estimating where the counts are adequate and recovering the fine scale at the end~\citep{gasparrini2022smallarea}. We do the same. We estimate at the metropolitan scale, pool across cities, and downscale to the neighbourhood.
+
+What follows describes each stage by reference to the source rather than by derivation. The structural correspondence between the two applications is given in Table~\ref{tab:twin}, and the rest of the chapter walks the three stages in turn.
+
+\begin{table}[ht]
+\centering
+\caption{Structural correspondence between the framework as applied to England and Wales~\citep{gasparrini2022smallarea} and the present work.}
+\label{tab:twin}
+\renewcommand{\arraystretch}{1.6}
+\setlength{\tabcolsep}{12pt}
+\begin{tabular}{p{0.26\textwidth} p{0.30\textwidth} p{0.28\textwidth}}
+\hline
+ & England and Wales & Canada \\
+\hline
+Fine-scale unit & Lower super-output area & Dissemination area \\
+Pooling unit & Local authority district & Census metropolitan area \\
+Stage 1 & Conditional Poisson with DLNM, per district $\times$ age & Conditional Poisson with DLNM, per CMA $\times$ age \\
+Temperature cross-basis & Quadratic B-spline, knots at 10th, 75th, 90th percentiles & Identical \\
+Lag cross-basis & Natural cubic spline, lag 0--21 days & Identical \\
+Stage 2 & Multivariate meta-regression on PCA indicators & Identical \\
+Vulnerability indicators & PCA composites of small-area variables & Identical \\
+Downscaling & Predict at LSOA indicator values & Predict at DA indicator values \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{The first-stage model}
+ 
+The first stage fits a temperature--mortality association separately within each census metropolitan area and each of four age groups, using the case time series design of Gasparrini~\citep{gasparrini2021}. The parent model is a conditional Poisson regression of the daily death count on temperature; we use it in the form given by Gasparrini et al.~\citep{gasparrini2022smallarea}, specialized to the CMA as the pooling unit:
+%
+\begin{equation}\label{eq_firststage}
+\log E(Y_{i,t}) = \xi_{i(k)} + \mathrm{cb}(T_{i,t}, \ell;\, \theta_{c,a}) + s(t;\, \gamma_{c,a}) + I(w_{t};\, \varphi_{c,a}),
+\end{equation}
+%
+where
+\begin{itemize}
+  \item $Y_{i,t}$ is the death count in dissemination area $i$ on day $t$, assumed Poisson distributed;
+  \item $\xi_{i(k)}$ is the stratum intercept, defined for each dissemination area $i$ within stratum $k$, where strata index month-in-year subsets of the study period;
+  \item $\mathrm{cb}(T_{i,t}, \ell;\, \theta_{c,a})$ is the cross-basis of temperature $T_{i,t}$ over lag $\ell$, with coefficients $\theta_{c,a}$ specific to census metropolitan area $c$ and age group $a$;
+  \item $s(t;\, \gamma_{c,a})$ is a natural spline of time with one degree of freedom per year, carrying long-term trend;
+  \item $I(w_{t};\, \varphi_{c,a})$ are day-of-week indicators.
+\end{itemize}
+ 
+The stratum intercepts $\xi_{i(k)}$ compare each day only against other days in the same neighbourhood, season, and year, so that long-term trend, seasonality, and every fixed neighbourhood feature are held constant by construction. The conditional Poisson estimator of Armstrong et al.~\citep{armstrong2014} conditions them out, leaving only $\theta_{c,a}$, $\gamma_{c,a}$, and $\varphi_{c,a}$ to estimate.
+ 
+We fit within the metropolitan area, not the dissemination area, because the daily death count in a single dissemination area is too low to identify the association on its own. The cross-basis is specified exactly as in the source~\citep{gasparrini2022smallarea}: a quadratic B-spline in temperature with internal knots at the 10th, 75th, and 90th percentiles of each city's temperature distribution, and a natural cubic spline over lags 0 to 21 days with knots at equally spaced points on the log scale of the lag.
+ 
+\section{The second-stage model}
+ 
+The first stage returns one fitted association per metropolitan area and age group, carried in the cross-basis coefficients $\theta_{c,a}$ with covariance $\Sigma_{c,a}$. Before pooling, we reduce each association to its overall cumulative form $\theta^{*}_{c,a}$, summing the effect across the lag window into a single curve~\citep{gasparrini2013reduce}. The cumulative curve is the quantity we report, and it is small enough to pool stably at the number of cities we have.
+ 
+We pool the reduced curves with a multivariate mixed-effects meta-regression~\citep{sera2019}:
+%
+\begin{equation}\label{eq_secondstage}
+\theta^{*}_{c,a} = X_{c,a}\,\beta + Z_{c,a}\,b_{c,a} + \varepsilon_{c,a},
+\end{equation}
+%
+where
+\begin{itemize}
+  \item $\theta^{*}_{c,a}$ is the reduced cumulative curve for metropolitan area $c$ and age group $a$;
+  \item $X_{c,a}$ is the design matrix of fixed-effects meta-predictors, holding age indicators and the composite vulnerability indicators;
+  \item $\beta$ is the vector of fixed-effects coefficients;
+  \item $Z_{c,a}\,b_{c,a}$ are between-area random effects, retained only if a multivariate Cochran's $Q$ test calls for them~\citep{gasparrini2013reduce, sera2019};
+  \item $\varepsilon_{c,a}$ is the sampling error carried forward from the first stage, with (co)variance $V^{*}_{c,a}$.
+\end{itemize}
+ 
+The meta-predictors in $X_{c,a}$ are not the raw neighbourhood variables but a small number of composite indicators built from them by principal component analysis, following the source~\citep{gasparrini2022smallarea}. We construct these in Chapter~\ref{chapter:vulnerability}. The raw variables are strongly correlated, and reducing them to a few uncorrelated components carries their joint effect without the instability of estimating a long list of correlated predictors. The number of components we retain is chosen by minimizing the Akaike information criterion of the meta-regression~\citep{gasparrini2022smallarea}.
+ 
+\section{Downscaling to the neighbourhood}
+ 
+The pooled model is fitted at the metropolitan scale but written in terms of neighbourhood characteristics. For each dissemination area, we evaluate the meta-regression at that area's own values of the composite indicators and read off a temperature--mortality curve specific to it~\citep{gasparrini2022smallarea}. From each curve we take the minimum-mortality temperature as the reference, and summarize the danger of heat as the relative risk at a high temperature percentile against that reference. Doing this for every dissemination area produces the national surface reported in Chapter~\ref{chapter:nationalmap}.
+ 
+\section{Discussion}
+ 
+The case time series isolates the within-stratum temperature signal and nothing more; Gasparrini names this limit of the design directly~\citep{gasparrini2021}, and we carry only descriptive claims through the chapters that follow. The design also assumes that the relationship between neighbourhood characteristics and risk, estimated at the metropolitan scale, holds at the finer scale of the dissemination area. We test that assumption in Chapter~\ref{chapter:validation}. In the next chapter we apply the design across Canada's major cities and present the first neighbourhood-level map of heat-related mortality risk for the country.

@@ -1,0 +1,150 @@
+%=====================================================================
+% MSc Monograph — Master File
+% Heat-Mortality Risk at the Dissemination-Area Scale Across Canadian CMAs
+% Built on the uOttawa thesis template (Sorensen 2024), made self-contained:
+% the external front-pages file was removed because it called preamble-only
+% glossary machinery in the body. Title page is now built inline.
+%=====================================================================
+\documentclass[letterpaper,12pt,titlepage,oneside,final]{book}
+
+\newcommand{\package}[1]{\textbf{#1}}
+\newcommand{\cmmd}[1]{\textbackslash\texttt{#1}}
+
+%=====================================================================
+% DOCUMENT PARAMETERS
+%=====================================================================
+\def\doctitle{Resolving Heat-Mortality Risk to the Neighbourhood in Canada} % This will need to be a contribution title: "Resolving Heat-Mortality Risk to the Neighbourhood in Canada". Title = what we actually did, in five words.
+\def\authorname{Zane R. Khartabill}
+\def\supervisorname{Stacey R. Smith?}
+\def\cosupervisorname{\'Eric Lavigne}
+\def\departmentname{School of Epidemiology and Public Health}
+\def\facultyname{Faculty of Medicine}
+\def\degreename{Master of Science in Epidemiology}
+\def\location{Ottawa, Canada}
+\def\yearname{2027}
+\def\universityname{University of Ottawa}
+
+\usepackage{ifthen}
+\newboolean{PrintVersion}
+\setboolean{PrintVersion}{false}
+
+\usepackage{amsmath,amssymb,amstext,amsfonts}
+\usepackage[pdftex]{graphicx}
+\usepackage{enumitem,fancyhdr,setspace,caption,subcaption,tocloft,titlesec,mathtools,gensymb,lscape,float}
+\usepackage{booktabs}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[includehead]{geometry}
+
+\renewcommand{\cfttoctitlefont}{\null\hfill\Huge\scshape}
+\renewcommand{\cftloftitlefont}{\null\hfill\Huge\scshape}
+\renewcommand{\cftlottitlefont}{\null\hfill\Huge\scshape}
+\renewcommand{\cftchapfont}{\scshape}
+\renewcommand{\cftpartfont}{\bfseries\scshape}
+
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
+\DeclareCaptionFormat{custom}{\mdseries{#1#2}{\small #3}}
+\captionsetup{format=custom}
+
+\titleformat{\chapter}[display]{\filleft\Huge\scshape}{\filleft\fontsize{80}{130}\selectfont\thechapter}{0pt}{}[]
+\titleformat{\section}[hang]{\mdseries\Large}{\thesection}{20pt}{\scshape}
+\titleformat{\subsection}[hang]{\mdseries\large}{\thesubsection}{20pt}{\scshape}
+\titlespacing*{\chapter}{0pt}{10pt}{30pt}
+
+\usepackage[pdftex,pagebackref=false]{hyperref}
+\hypersetup{
+    plainpages=false, unicode=false, pdfstartview={FitH},
+    pdftitle=\doctitle, pdfauthor=\authorname,
+    pdfsubject={Heat-mortality, dissemination-area, case time-series, Canada},
+    pdfnewwindow=true, colorlinks=true,
+    linkcolor=black, citecolor=black, filecolor=black, urlcolor=black
+}
+\usepackage[nameinlink]{cleveref}
+
+\setlength{\marginparwidth}{0pt}
+\setlength{\marginparsep}{0pt}
+\setlength{\evensidemargin}{0.125in}
+\setlength{\oddsidemargin}{0.125in}
+\setlength{\textwidth}{6.375in}
+\raggedbottom
+\setlength{\parskip}{\medskipamount}
+\renewcommand{\baselinestretch}{1}
+
+\let\origdoublepage\cleardoublepage
+\newcommand{\clearemptydoublepage}{\clearpage{\pagestyle{empty}\origdoublepage}}
+\let\cleardoublepage\clearemptydoublepage
+
+%=====================================================================
+\begin{document}
+
+%----------------------------------------------------------------------
+% TITLE PAGE (inline — self-contained, no external file)
+%----------------------------------------------------------------------
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Large\scshape \doctitle \par}
+\vspace{2.5cm}
+{\large \authorname \par}
+\vspace{2.5cm}
+{Thesis submitted in partial fulfillment of the requirements\\
+for the degree of \degreename \par}
+\vspace{1.5cm}
+{\departmentname \\ \facultyname \\ \universityname \par}
+\vspace{2cm}
+{\text{Supervisor:} \supervisorname \\
+\text{Co-supervisor:} \cosupervisorname \par}
+\vfill
+{\copyright\ \authorname, \location, \yearname \par}
+\end{titlepage}
+
+%----------------------------------------------------------------------
+% FRONT MATTER (stubs kept commented; fill at the end)
+%----------------------------------------------------------------------
+\frontmatter
+\pagenumbering{roman}
+
+% \input{frontmatter/abstract}          % WRITE LAST
+% \input{frontmatter/acknowledgements}
+% \input{frontmatter/contributions}
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+% \input{frontmatter/abbreviations}     % DA CMA DLNM CTS PCA CVSD DAD NACRS CIHI PCCF+ CANUE MMT MMP RR AF
+
+%----------------------------------------------------------------------
+% MAIN BODY — fat in the middle (3-4-5), lean at the ends (1,7)
+%----------------------------------------------------------------------
+\mainmatter
+\doublespacing
+\pagestyle{fancy}
+\rhead{}
+\setlength{\headheight}{30pt}
+
+\input{chapters/ch1-problem}        % ~10pp  setup    cited
+\input{chapters/ch2-method}         % ~12pp  shield   cited   [HARD CEILING]
+\input{chapters/ch3-national-map}   % ~18pp  SPINE    mine
+\input{chapters/ch4-vulnerability}  % ~15pp  SPINE    mine
+\input{chapters/ch5-age-fork}       % ~12pp  rib      mine
+\input{chapters/ch6-validation}     % ~10pp  armor    cited
+\input{chapters/ch7-discussion}     % ~8pp   my touch cited
+
+%----------------------------------------------------------------------
+% END MATTER
+%----------------------------------------------------------------------
+\appendix
+\chapter*{APPENDICES}
+\addcontentsline{toc}{chapter}{APPENDICES}
+% \input{appendices/appendix-a-pipeline}
+
+\cleardoublepage
+\phantomsection
+\renewcommand*{\bibname}{References}
+\addcontentsline{toc}{chapter}{References}
+\singlespace
+\bibliographystyle{unsrtnat}
+\bibliography{refs}
+
+\end{document}

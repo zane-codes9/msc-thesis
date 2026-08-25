@@ -1,0 +1,2 @@
+2026-08-12 · bottomup-rotation-sign-hunt · flip survives seamless build (−0.946); seam dead, outcome side isolated
+2026-08-21 · N5-sign-branch-C3 · sign branch fired anti-track (−0.9, stage 1 on trial); C3 = 0.849 replaces 0.731

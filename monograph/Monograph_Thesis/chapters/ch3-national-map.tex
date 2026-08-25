@@ -1,0 +1,110 @@
+\chapter{Resolving heat-mortality risk to the neighbourhood}\label{chapter:nationalmap}
+
+\section{Introduction}
+
+Heat kills unevenly within a city, and the unevenness has never been resolved to the neighbourhood across the country. The obstacle is the death count. A single dissemination area records too few deaths in a warm season to fit an association to, and no single city carries enough of these associations to pool on its own.
+
+We resolve the risk to the neighbourhood by predicting it, not fitting it. Rather than estimate an association from each neighbourhood's own deaths, which the counts cannot support, we estimate one association across all 41 census metropolitan areas at once, let neighbourhood characteristics carry the variation, and read each neighbourhood's risk off the pooled model at its own profile. The estimate for a neighbourhood is therefore identified by the national sample, not by its handful of local deaths. This chapter applies that design across Canada's major cities and maps heat-related mortality risk to the neighbourhood for all 41 of them.
+
+\section{What each estimate is}
+
+The map reports a temperature--mortality curve for every neighbourhood, and each is a prediction rather than a fit. The distinction is exact. To fit a curve to a dissemination area would mean estimating its parameters from that area's own deaths, which the counts will not support. To predict it means evaluating the national model at the area's own vulnerability profile and reading off the curve that profile implies. A fitted curve would borrow its precision from the area's own mortality; a predicted curve borrows it from the national sample.
+
+This only works if the profile is itself resolved to the neighbourhood. The vulnerability indicators that drive the prediction are measured at the dissemination area, from census and environmental data that exist at that scale, so two areas within the same city receive different curves whenever their profiles differ. Were these indicators measured only at the metropolitan scale, every neighbourhood in a city would share one profile, the prediction would return one curve, and the map would be flat within each city. 
+
+This is the standard small-area move, not a workaround for missing data. Gasparrini et al.\ adopt it precisely because the alternative is infeasible: the design \enquote{allows estimation of risk associations at the highest possible resolution without requiring the fit of LSOA-specific models, which would be unfeasible given the low number of deaths in each unit}~\citep{gasparrini2022smallarea}. The dissemination area is the direct analogue of their lower super-output area, and the constraint is the same one.
+
+The strength that the prediction borrows is the national sample, and its size can be stated. The model is identified not by dissemination areas but by the metropolitan curves that enter the pooling stage: one reduced cumulative curve per census metropolitan area and age group, 41 areas by 4 age groups, 164 units in all. Each curve is summarized by 5 coefficients, so the between-unit covariance the pooling stage estimates carries $5 \cdot 6 / 2 = 15$ free parameters. The ratio of units to parameters is therefore about 11 to 1. It clears the conventional floor of 10, and it is thin.
+
+The thinness is the residue of the step that makes the pooling possible at all. The first-stage cross-basis is 25 coefficients, and a between-unit covariance over 25 would carry $25 \cdot 26 / 2 = 325$ parameters against the same 164 units, a ratio below 1 to 2 that no sample of this size could support. Reducing each association to its cumulative curve before pooling is what moves the ratio from below one-half to 11~\citep{gasparrini2013reduce}. The number of units is fixed by the country, 41 metropolitan areas and 4 age groups, and cannot be raised; the only lever already pulled is the reduction. We therefore read the national surface as characterizing how risk varies across neighbourhoods, not as quantifying each neighbourhood's risk to a precision the sample cannot bear.
+
+One assumption carries the whole downscaling, and we state it plainly. The relationship between vulnerability and risk is estimated across metropolitan areas, where the death counts are adequate, and then applied within them, at the neighbourhood, where they are not. The slope is learned between cities and spent inside them. Nothing in the design guarantees that a relationship estimated between metropolitan areas holds at the finer scale of the dissemination area; it is a transport across levels, and it can fail. A city whose between-area gradient differs from the national one would have its neighbourhoods predicted from a slope that does not govern them.
+
+This is the same assumption the source design rests on, and Gasparrini et al.\ make it for the same reason: the finer scale cannot identify the relationship on its own, so the coarser one must stand in for it~\citep{gasparrini2022smallarea}. We adopt it on the same terms, and we mark its consequence rather than assume it away. Whether the national gradient governs the within-city scale is an empirical question, not a settled one, and the validation in Chapter~\ref{chapter:validation} is where we put it to the test. Until then the surface should be read as conditional on a relationship it assumes but does not prove.
+
+Three checks confirm that the pooled model is internally sound before any neighbourhood is read from it. The first is convergence: the meta-regression is fitted by restricted maximum likelihood, and the estimate is taken only once the likelihood has converged. The second is that the estimated between-unit covariance is a covariance: a $5 \times 5$ matrix of curve coefficients is admissible only if it is positive-definite, which we confirm by Cholesky decomposition, since a covariance that fails this test describes no distribution and cannot be sampled from downstream. The third is residual heterogeneity: after the vulnerability indicators and age have explained what they can, we measure how much variation between units remains with the $I^2$ statistic, and read a low residual as the indicators having absorbed the systematic between-area differences.
+
+These checks establish that the machinery is sound, not that it is right. Whether it recovers a risk structure already known from other sources is a separate question, and the place we answer it is the validation in Chapter~\ref{chapter:validation}.
+
+\section{The national slope}
+
+Everything on the map descends from one estimated quantity: the slope relating a neighbourhood's vulnerability to its heat risk, pooled across all 41 metropolitan areas. It is a coefficient in the fixed-effects vector $\beta$ of the second-stage model, and it is the only place the data are asked whether vulnerability and risk move together at all. The downscaling cannot manufacture this relationship; it can only evaluate whatever slope the pooling stage returns. If that slope were flat, every neighbourhood would receive the same curve regardless of its profile, and the map would be uniform.
+
+The slope is not flat. [Estimated national slope and its confidence interval enter here once the mortality data are in hand; on the simulated substrate the relationship recovers in the expected direction, but the value reported on the map is the one fitted to observed deaths, which the present draft does not yet carry.] What matters for reading the map is that this number is estimated, not assumed. It is fitted from the metropolitan curves, it carries a confidence interval, and it could have come back indistinguishable from zero. The colour spread across the map is this slope made visible.
+
+\section{One city in full}
+
+Toronto resolves into 7,716 dissemination areas, and the model assigns each its own heat-mortality curve. Figure~\ref{fig:toronto} maps the resulting risk across the city. The surface is not uniform: risk rises and falls between adjacent neighbourhoods, tracking the vulnerability profiles that drive the prediction, and the pattern holds at a grain no single-curve city estimate could show.
+
+\begin{figure}[ht]
+\centering
+% [Toronto DA choropleth enters here once observed mortality is fitted;
+%  standardized heat-mortality risk per DA, Canadian 2011 standard population,
+%  continuous colour scale, no per-DA significance overlay]
+\caption{Heat-mortality risk across the dissemination areas of the Toronto census metropolitan area.}
+\label{fig:toronto}
+\end{figure}
+
+One city is enough to see what the design buys. The risk at a neighbourhood is read from the national slope evaluated at that neighbourhood's own profile, so the variation across Toronto is not estimated from Toronto's deaths alone; it is the national relationship, spoken at the scale of the city's own dissemination areas. What the map shows for one city, it shows for all of them.
+
+\section{The national surface}
+
+The same machinery runs across all 41 census metropolitan areas, and Figure~\ref{fig:national} maps every one of them at the dissemination area. The 41 areas span the country's range of climate zones, from the maritime west to the continental interior to the cold east, so the surface is not one climate's pattern repeated but the design holding across very different temperature regimes. Within each city the risk resolves to the neighbourhood, on the same national slope, standardized to the same population.
+
+\begin{figure}[ht]
+\centering
+% [National DA choropleth enters here once observed mortality is fitted;
+%  standardized heat-mortality risk per DA across all 41 CMAs,
+%  Canadian 2011 standard population, continuous colour scale,
+%  no per-DA significance overlay; inset panels per metropolitan area]
+\caption{Heat-mortality risk across the dissemination areas of all 41 Canadian census metropolitan areas.}
+\label{fig:national}
+\end{figure}
+
+The map covers the cities, not the country between them. That is where most of the population lives, and it is at the neighbourhood that the risk divides.
+
+\section{What each colour is}
+
+Each neighbourhood's curve carries two kinds of information, and we read them separately. The first is the shape of the curve: where risk is lowest, and how steeply it climbs into the heat. The second is the burden the curve implies: how many deaths the heat actually adds. This section takes the two in turn.
+
+\subsection{Shape}
+
+The shape of a curve is anchored by its minimum-mortality temperature, the temperature at which risk is lowest. Above it, risk climbs; the minimum-mortality temperature is the reference every heat risk is measured against. We also record its percentile in the local temperature distribution, the minimum-mortality percentile, which places the reference within the climate the neighbourhood actually experiences: the same 18~\textdegree C is a hot day in one city and a mild one in another, and the percentile is what makes the reference comparable across them.
+
+We find the minimum-mortality temperature for each dissemination area. A downtown neighbourhood and a suburban one in the same city can differ in their minimum by several degrees, and a single city-wide reference would misplace the danger for both. The reference is found in two passes: the first predicts the curve at the city-median temperature and locates its minimum; the second re-centres the curve on that minimum and reads the risk from there~\citep{gasparrini2022smallarea}. Resolving the reference to the dissemination area is what keeps these neighbourhood-scale differences from being averaged into a single city figure.
+
+In England and Wales the minimum-mortality temperature ranges from 14.9 to 22.6~\textdegree C across the study area~\citep{gasparrini2022smallarea}. Canada spans a wider range of summer climate, and the neighbourhood minima are expected to spread more widely still; the observed range across the 41 metropolitan areas enters here once the mortality data are fitted.
+
+\subsection{Burden}
+
+The shape of a curve says where risk is lowest; the burden says what the heat costs. We read it in three steps. The first is the relative risk on a hot day: the risk at the 99th percentile of the neighbourhood's temperature, measured against its own minimum-mortality temperature. This is the multiplier the curve places on a hot day, relative to the day the neighbourhood is safest.
+
+The relative risk is a ratio, not a count: it carries no population, so it cannot by itself say how heavy the burden is. The second step converts it into deaths: the number the heat adds over the warm season, and the fraction of all deaths that number represents.
+
+A raw count, though, mostly tracks how many people live in a neighbourhood and how old they are. A neighbourhood reads as high-burden largely because it is populous and elderly, and the heat signal is buried under that. The third step removes it: we age-standardize the rate to the 2011 Canadian standard population, the convention used by Statistics Canada and the Canadian Institute for Health Information. Standardizing to a common age structure asks what each neighbourhood's heat mortality would be if every neighbourhood had the same age composition, so that what remains is the heat signal and not the fact that one neighbourhood is simply older than another. We use the Canadian standard rather than the European standard population of the source~\citep{gasparrini2022smallarea}, because the rate is read against Canadian neighbourhoods and reported to Canadian institutions; the European standard is carried in the appendix as a sensitivity.
+
+\subsection{Uncertainty}
+
+Every indicator on the map is read from the same national coefficients, so the uncertainties attached to them are not independent. Two neighbourhoods predicted from the same pooled slope share the uncertainty in that slope; the error in one is bound to the error in the other. A confidence interval computed for each neighbourhood on its own would treat these shared errors as if they were separate, and double-count the one uncertainty they hold in common.
+
+We therefore propagate the uncertainty once, at the level it actually lives: the coefficients of the pooled model. Drawing repeatedly from the fitted distribution of those coefficients and carrying each draw through the downscaling gives a set of national surfaces whose spread reflects the single shared source of error, without counting it once per neighbourhood~\citep{masselot2025}. This is why the second-stage covariance had to be a proper covariance: it is the distribution these draws are taken from, and a matrix that failed the positive-definite test could not be sampled.
+
+It is also why the maps carry no marks of significance. With several thousand neighbourhoods drawn through one shared slope, per-neighbourhood significance would invite the eye to read individual areas as separately established, which they are not. The uncertainty is a property of the surface as a whole, not of each neighbourhood apart from the rest, and the map is drawn to show the risk, not to certify each area against a threshold.
+
+\section{Does the surface cohere?}
+
+Before the map is read for what it newly shows, it should agree with what is already known. Three checks ask this, each comparing the surface against a fact established outside the model. They test internal coherence, not external recovery: whether these internal checks pass is a different question from whether the design recovers a risk structure known from independent data.
+
+The first check is the direction of the vulnerability gradient. The pooled slope should run the expected way: neighbourhoods whose profiles carry more of the established drivers of heat vulnerability should predict higher risk, not lower. The sign is not imposed; it is estimated, and a reversed sign would mean the prediction had inverted somewhere between the indicators and the curve. The direction recovered on the fitted data enters here.
+
+The second check is whether the minimum-mortality temperature tracks climate. A neighbourhood's minimum should sit near the warmth its residents are used to, so warmer cities should carry higher minima than colder ones. A minimum that ignored climate, sitting at the same temperature in a cold city and a hot one, would mean the temperature input had been linked to the wrong places. The relationship between city climate and recovered minima enters here.
+
+The third check is whether the map agrees with episodes already on record. Where a heat event is known to have raised mortality, the neighbourhoods it struck should read as higher-risk on the surface. Agreement here is consistency, not proof: the map is built from twenty years of warm seasons, and a single episode may or may not surface cleanly through that average, depending on when it fell and how the warm-season window caught it. We therefore read agreement as the surface being consistent with the record, and read its absence as a question for the validation rather than a verdict on the map. The comparison against known episodes enters here.
+
+\section{What the map leaves open}
+
+This chapter resolved heat-mortality risk to the neighbourhood and showed that it varies there: the shape of the curve and the burden it carries differ from one dissemination area to the next, on a national slope the data themselves supplied. What the map establishes is that risk varies. What it does not yet say is why, or for whom.
+
+Why a neighbourhood carries more risk is a question about its vulnerability profile, and the profile has so far entered only as a set of composite indicators driving the prediction. Which of its features matter, and how they combine, is the subject of Chapter~\ref{chapter:vulnerability}, where the indicators are built and read.
+
+For whom the risk is highest is a question about age, which the map holds fixed by standardizing it away. Standardization was the right choice for reading the neighbourhood signal, but it sets age aside rather than examines it, and age is one of the strongest drivers of heat mortality~\citep{gasparrini2022smallarea}. Chapter~\ref{chapter:agefork} takes it up directly, and reads the surface separately across the age groups the standardization combined.
