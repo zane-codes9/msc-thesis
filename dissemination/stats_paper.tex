@@ -1,0 +1,436 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{times}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{gensymb}
+
+\onehalfspacing
+
+\title{Heat-related mortality risk across Canada's
+neighbourhoods: a case time series analysis of 41 census
+metropolitan areas}
+\author{[Author line]}
+\date{}
+
+\begin{document}
+\maketitle
+
+% LOG --- revise each session
+%============================================================
+%
+% STATUS: full end-to-end draft, awaiting next week pass
+% ---- LAST SESSION (2026-07-13) ----
+% - Drafted the whole paper.
+% - Title is a placeholder---re-derive from most surprising result.
+%
+% ---- OPEN FOLLOW-UPS ----
+% [ ] refs.bib --- Zotero + Better BibTeX export. Citekeys locked in-text.
+%     NEW citekeys from proposal, confirm in .bib: hebbern2023, cote2024,
+%     and possibly rinner2010 (Toronto, uncited in P3 --- cite or leave).
+% [ ] Add \usepackage{gensymb} to preamble --- \degree won't compile.
+% [ ] [FILL] numbers: Boudreault Quebec figure; Fig 1/2/4 RR + CI +
+%     ranges; Fig 2 Q p-value + I2; Fig 4 RR range + spatial pattern.
+% [ ] Fig 3 recovery: re-run after DGP collinearity fix (F1/F3 too close).
+% [ ] Author line + affiliations.
+% [ ] Fig 3 slot changes job with real mortality (no planted truth):
+%     decide descriptive observed PCA vs validation-to-appendix.
+%
+% ---- ACKNOWLEDGMENTS (important, do not lose) ----
+% CANUE attribution required by the data-use agreement. Check their
+% metadata for the required wording and how to cite them. Put the
+% CANUE statement in the Acknowledgments at the end.
+%
+% ---- FIGURE SLOT INVARIANT (pilot -> final) ----
+% Slot 1 fits: slivers -> full/national Stage 1
+% Slot 2 pool: 3 CMAs / age 75-84 -> all CMAs, all age bands
+% Slot 3 recovery: simulated -> observed structure OR appendix
+% Slot 4 map: pilot geography -> national DA map
+%
+
+%============================================================
+% ABSTRACT --- written last; four parts, eight sentences.
+%============================================================
+\begin{abstract}
+%Background:
+Extreme heat kills in Canada far beyond the deaths certified as
+heat, and its risk concentrates in particular neighbourhoods. A neighbourhood
+records too few deaths to estimate its risk directly, and
+national estimates have therefore resolved to the city and
+above.
+%Methods:
+We applied a two-stage small-area design to the [XX]
+dissemination areas of Canada's 41 census metropolitan areas.
+Case time series fits within each city and age band were pooled
+in a multivariate meta-regression on composite vulnerability
+components and downscaled to an exposure-response curve for
+every dissemination area.
+%Results:
+Heat-related mortality risk varied [more within cities than
+between them], with relative risk at the 99th temperature
+percentile ranging from [XX] to [XX] across dissemination areas
+and [XX] excess deaths (95\% empirical CI [XX--XX]) attributable
+to heat each year. [Vulnerability components / the dominant
+modifier] accounted for [XX]\% of the between-area variation in
+heat risk.
+%Conclusion:
+The analysis yields a national map of heat-related mortality
+risk at neighbourhood resolution, with minimum-mortality
+temperature and attributable burden for every dissemination
+area. We recommend the dissemination-area estimates as the
+input layer for municipal heat-response planning.
+% [GATE: Results S1 is the surprise slot (criterion 1, may
+%  flip). S2 filled from Fig 3. DA count ~40,000 in-CMA, pin at
+%  extraction. Eight sentences, at ceiling.]
+\end{abstract}
+
+%============================================================
+\section{Introduction} % - field, ladder, routes, aim.
+%============================================================
+
+Non-optimum ambient temperature accounts for 7$\cdot$71\% of
+mortality across 384 locations in 13 countries, Canada among
+them \citep{gasparrini2015mcc}, and more than a third of
+warm-season heat-related deaths worldwide are attributable to
+human-induced warming \citep{vicedocabrera2021}. In Canada,
+roughly 670 excess deaths over 2000 to 2020 have been attributed
+to extreme heat events across the country's twelve largest
+cities \citep{quick2024twelvecities}. The June 2021 heat dome
+was associated with [619] deaths in British Columbia
+\needcite{BC Coroners heat dome death review---verify count
+and dates against presentation}. Province-wide assessments place
+a burden of comparable scale within single provinces
+\citep{boudreault2024quebec}. Heat risk is not spread evenly–it
+concentrates in particular places and populations, and
+area-level characteristics account for much of the difference.
+Across Europe, small-area studies find heat mortality higher
+where population density is greater, green space scarcer, and
+air pollution higher \citep{zhang2023cvdeurope,
+zafeiratou2023respeurope}. The same characteristics recur across
+cities and countries, with only their local weights differing
+\citep{sera2019urban}.
+
+Canadian heat-mortality work has operated above the
+neighbourhood scale. National modelling has estimated
+temperature--mortality associations across 111 health regions
+\citep{hebbern2023}, multi-city work across the twelve largest
+cities \citep{quick2024twelvecities}, and provincial analyses
+within single provinces \citep{boudreault2024quebec,
+chen2016ontario}. Neighbourhood-scale work has been single-city:
+Toronto mapped through composite vulnerability indices
+\citep{rinner2010}, Quebec's dissemination areas through
+aggregate counts \citep{cote2024}, and three cities through the
+national death registry \citep{quick2025smallarea}.
+
+Estimation below the city is hard because the unit records too
+few deaths to estimate a stable exposure-response curve of its
+own. Two routes get past it. Single-stage spatial models fit all
+areas at once, borrowing strength between neighbours through a
+conditional autoregressive prior \citep{quijalzamorano2024sbdlnm,
+rutten2026spatialvarying, rutten2026effectmod}. Two-stage
+designs fit where counts allow, pool the reduced curves in a
+multivariate meta-regression on area-level vulnerability
+predictors, and predict every area from its own profile
+\citep{gasparrini2022smallarea, sera2022extended,
+dimaso2025italy, masselot2025extensions}. A smoothing prior
+pools neighbours hardest in the temperature tail, where
+vulnerability binds and heat risk is read; the two-stage design
+carries no geographic term, so each area's risk follows its own
+profile.
+
+We apply the two-stage small-area design
+\citep{gasparrini2022smallarea} to the [XX] dissemination areas
+of Canada's 41 census metropolitan areas: a case time series fit
+within each city and age band, pooled across cities on composite
+vulnerability components, and downscaled to an exposure-response
+curve for every dissemination area. Doing so asks two questions
+of the Canadian substrate: to what extent heat-related mortality
+risk varies across neighbourhoods, and how much of that
+variation the vulnerability indicators account for.
+
+%============================================================
+\section{Methods} % - fit → reduce → pool → downscale.
+%============================================================
+
+\subsection{Study design and data}
+
+We performed a nationwide small-area analysis of mortality and
+temperature across the [XX] dissemination areas (DAs) within
+Canada's 41 census metropolitan areas (CMAs), from 2000 to 2023.
+
+Individual death records from the Canadian Vital Statistics
+Death database (CVSD), obtained through Statistics Canada's
+virtual Data Lab, were assigned to DAs by residential postal
+code through the PCCF+ linkage and aggregated to daily counts of
+all-cause non-accidental deaths in four age bands (0--64, 65--74,
+75--84, 85 and over). Each DA carries a daily mean temperature
+series, the mean of daily minimum and maximum from the Daymet V4
+1 km gridded product, area-weighted over its polygon.
+Age-specific population counts come from the 2021 Census, on
+2021 boundaries throughout. DAs with zero population or without
+temperature coverage were excluded.
+
+Area-level vulnerability indicators come from thirteen datasets
+of the Canadian Urban Environmental Health Research Consortium
+(CANUE; greenness, air quality, urban heat, built form, 2019),
+indexed to single-link postal codes at a 100 m buffer and
+assigned to DAs through the same PCCF+ linkage, and from
+thirteen topics of the 2021 Census Profile (demography, housing,
+deprivation), taken as rates. Air conditioning is not collected;
+renter share stands in for it. The Pampalon Material and Social
+Deprivation Index benchmarks the components and is not an input,
+as it is built from census variables that enter directly.
+
+\subsection{Statistical analysis}
+
+Daily death and temperature series enter as a case time series
+per DA \citep{gasparrini2021, gasparrini2022cts}, fitted
+separately for each CMA and age band, giving 164 first-stage
+estimates.
+
+Each fit is a conditional Poisson model with quasi-Poisson
+variance, with stratum intercepts eliminated by conditioning
+\citep{armstrong2014}. Strata are defined by DA, year, and
+month, with day-of-week indicators and daily relative humidity
+[source] as covariates and no further smooth of time. Temperature enters through a cross-basis
+\citep{gasparrini2014dlnm}: a quadratic B-spline with three
+internal knots at the 10th, 75th, and 90th percentiles of the
+CMA's temperature distribution, and a natural cubic spline over
+lags 0 to 21 with three internal knots equally spaced on the log
+scale. The two margins give five basis columns each, and the
+cross-basis 25 parameters.
+
+We reduced each fitted cross-basis to its overall cumulative
+exposure-response curve, centred at the CMA's median
+temperature, yielding a five-coefficient summary and its
+covariance, the input to the second stage
+\citep{gasparrini2013reducing}. First-stage fits and reductions
+ran inside the virtual Data Lab; only the reduced coefficients
+and their covariances left it.
+
+Vulnerability enters through a single principal component
+analysis fitted on the DA rows of all 41 CMAs; the first three
+components are carried forward, and CMA-level scores are
+population-weighted averages of the DA scores.
+
+We pooled the 164 reduced curves in a multivariate
+meta-regression under restricted maximum likelihood, with age
+band indicators and the first three components as
+meta-predictors and a random intercept on CMA
+\citep{sera2019mixmeta, gasparrini2012mvmeta, sera2022extended}.
+Residual heterogeneity is summarized by Cochran's Q and
+I\textsuperscript{2}.
+
+From the pooled model we predicted a curve for every DA and age
+band from the DA's own component scores, in two passes: a first
+prediction at the CMA-median centring locates the DA's
+minimum-mortality temperature, and the curve re-centred there
+yields the relative risks of heat and cold at the 99th and 1st
+percentiles and the corresponding attributable fractions
+\citep{gasparrini2014attributable}. Excess mortality
+rates are standardized to the Canadian 2011 standard population.
+Empirical confidence intervals come from 1,000 Monte Carlo draws
+of the pooled coefficients from their estimated covariance, with
+the per-DA prediction repeated on each draw, CMA and national
+totals summed within each draw, and intervals taken at the 2.5th
+and 97.5th quantiles \citep{masselot2025extensions}.
+
+Sensitivity analyses varied the lag window (0--14, 0--28 days),
+the cross-basis dimension (9, 16), the exposure metric (daily
+maximum; apparent temperature), the humidity adjustment
+(excluded), the stratification (day of week absorbed into the
+strata), the time control (a natural cubic spline of time
+added), the season (warm season only), the CANUE buffer (postal
+code point value), the standard population (European Standard
+Population 2013), and the map spread (corrected for residual
+between-area variance). between-area variance). Secondary analyses repeated the model by
+cause of death and by sex. Analyses were performed in R
+[version] with the dlnm, gnm, and mixmeta packages.
+% [GATE: R version at final run.]
+%============================================================
+\section{Results} % how many died, who dies, why they differ, where they are.
+%============================================================
+
+The analysis included [XX] deaths from all causes across the 41
+census metropolitan areas, spanning [XX] dissemination areas.
+Each year over the study period, an average of [XX] excess deaths
+(95\% empirical CI [XX--XX]) were attributable to heat,
+corresponding to a standardized excess mortality rate of [XX]
+deaths per 100,000 person-years (Canadian 2011 standard
+population). Figure~\ref{fig:cities} shows the city-level heat
+relative risk at the 99th temperature percentile across the 41
+CMAs, ranging from [XX] in [CMA] to [XX] in [CMA].
+% [GATE: CVSD extraction + national Stage 1 (DRAC). DA count:
+%  ~40,000 within the 41 CMAs; ~57,900 is all-Canada -- pin the
+%  frame before filling.]
+
+% Figure 1 -- slot 1 endpoint (pilot: 5 sliver fits)
+\begin{figure}[H]
+\centering
+% \includegraphics[width=\textwidth]{fig1_cma_rr.pdf}
+\caption{City-level relative risk of heat at the 99th temperature
+percentile across the 41 census metropolitan areas, from the
+first-stage fits. [Placeholder---gated on observed mortality.]}
+\label{fig:cities}
+\end{figure}
+
+Risk increased with age. The pooled relative risk at the 99th
+percentile relative to the minimum-mortality temperature rose
+from [XX] (95\% empirical CI [XX--XX]) at ages 0--64 to [XX]
+([XX--XX]) at ages 85 and over (Figure~\ref{fig:pooled}).
+Minimum-mortality temperatures ranged from [XX] to
+[XX]$\,\degree$C across CMAs, tracking each city's warm-season
+temperature distribution. Residual between-CMA heterogeneity
+after meta-regression was [Q p-value], I\textsuperscript{2}
+[XX]\%.
+% [GATE: all-CMA, all-age Stage 2. Q/I2 computable at K=41
+%  (df.residual > 0); the K=5 pilot pool cannot test them --
+%  monograph carries that fact, not the paper.]
+
+% Figure 2 -- slot 2 endpoint (pilot: K=5, one band)
+\begin{figure}[H]
+\centering
+% \includegraphics[width=\textwidth]{fig2_pooled_age.pdf}
+\caption{Pooled overall cumulative exposure-response curves by
+age band, from the multivariate meta-regression across the 41
+CMAs. [Placeholder---gated on observed mortality.]}
+\label{fig:pooled}
+\end{figure}
+
+The first three components accounted for [XX]\% of the variance
+of the indicators and entered the pooled model as
+meta-predictors, with [which components] associated with the
+heat slope; [component] tracked the Pampalon material
+deprivation index (r = [XX]). Predicted curves for
+a high-vulnerability and a low-vulnerability profile within the
+same CMA differed by [XX]\% in relative risk at the 99th
+percentile (Figure~\ref{fig:vuln}).
+% [GATE: real-indicator two-level PCA + K=41 Stage 2. The >20%
+%  within-CMA contrast is pilot criterion 1 promoted to a
+%  reported estimate. Slot-3 job change executed: descriptive
+%  observed structure, not recovery -- recovery lives in the
+%  appendix validation note.]
+
+% Figure 3 -- slot 3 endpoint (pilot: PCA recovery check)
+\begin{figure}[H]
+\centering
+% \includegraphics[width=\textwidth]{fig3_vulnerability.pdf}
+\caption{Vulnerability structure and its effect on risk:
+principal component loadings of the area-level indicators, and
+predicted exposure-response curves for high- and
+low-vulnerability profiles within one CMA.
+[Placeholder---gated on observed mortality.]}
+\label{fig:vuln}
+\end{figure}
+
+Figure~\ref{fig:map} maps heat-related mortality risk at
+dissemination-area resolution nationally. Predicted relative
+risk at the 99th percentile ranged from [XX] to [XX] across DAs,
+and minimum-mortality temperatures from [XX] to
+[XX]$\,\degree$C. Variation within CMAs [exceeded / compared to]
+variation between them, with the highest risks concentrated in
+[spatial pattern]. Downscaled predictions agreed with unpooled
+census-tract reference fits within [XX] (appendix).
+% [GATE: national downscale on observed mortality. The
+%  within/between spread sentence is evaluation criterion 1; the
+%  census-tract sentence is the principle-9 transfer check --
+%  appendix figure. Pilot Stage 3 diagnostics (Toronto 7,682 DAs,
+%  |rho|~0.91 ordering, sign inversion open, 2.9x amplitude) are
+%  monograph material and do not enter here.]
+
+% Figure 4 -- slot 4 endpoint: THE money figure
+\begin{figure}[H]
+\centering
+% \includegraphics[width=\textwidth]{fig4_national_map.pdf}
+\caption{Heat-related mortality risk across Canadian
+dissemination areas: predicted relative risk of heat at the 99th
+temperature percentile, from the pooled model and each DA's own
+vulnerability profile. [Placeholder---gated on observed
+mortality.]}
+\label{fig:map}
+\end{figure}
+
+
+%============================================================
+\section{Discussion}
+%============================================================
+
+Across the dissemination areas of Canada's 41 census
+metropolitan areas, heat accounted for an average of [XX] excess
+deaths ([95\% eCI]) each year, a standardized excess mortality
+rate of [XX] per 100,000 person-years, with minimum-mortality
+temperatures ranging from [XX] to [XX]$\,\degree$C across cities.
+Risk varied [more within cities than between them], with the
+highest values concentrated in [pattern].
+% [GATE: all three slots from Results; within/between may flip.]
+
+The patterns align with the small-area literature where it
+exists. The component tracking material deprivation carried
+[higher] heat risk, consistent with small-area findings in
+Europe \citep{gasparrini2022smallarea, zhang2023cvdeurope}. [Density,
+green space, and air quality loadings] recur across cities with
+only their weights differing \citep{sera2019urban}.
+Minimum-mortality temperatures tracked each city's own
+distribution, [continental CMAs separating from maritime ones],
+the adaptation signature reported across countries
+\citep{gasparrini2012mvmeta}. [Renter share], the available
+proxy for air conditioning, [behaved as in] the Canadian
+multi-city record \citep{quick2024twelvecities}.
+% [GATE: every bracket filled from Fig 3 loadings + Results;
+%  all refs must appear in the Introduction -- logged for the
+%  intro build.]
+
+A map at this resolution places risk at the scale where
+heat-health response is organized. Public health units can
+identify the most exposed neighbourhoods directly rather than
+infer them from city-wide averages, and the fitted risk
+functions couple to weather forecasts for anticipatory warning
+\citep{mistry2024forecast}. The same framework extends to
+hospital admissions and emergency-department visits, and to
+projection under climate scenarios. We recommend the
+dissemination-area estimates, not city averages, as the input
+layer for municipal heat-response planning.
+
+The magnitude of the excess depends on the effect summary. Each
+estimate is referenced to the DA's minimum-mortality
+temperature, so the excess counts deaths against a counterfactual
+at that DA's own optimum; heat and cold burdens are therefore
+not comparable across studies using fixed thresholds. The
+estimates are averages over the study period and carry no
+temporal change in susceptibility.
+
+This analysis has limitations. First, the downscale assumes that
+risk patterns estimated across areas hold at the areas
+themselves; agreement with unpooled census-tract fits (appendix)
+supports the assumption at one scale below the fitting unit.
+Second, the composite components size how much variation the
+indicators track and cannot attribute it to any single driver.
+Third, individual-level factors are not modelled, and the
+associations retain an ecological character. In addition,
+exposure comes from an interpolated grid whose uncertainty is
+not propagated, and predicted curves carry only the between-area
+variation the components explain, so the ordering of areas is
+more reliable than the range of risk; a surface corrected for
+the omitted variancetaken as rates is reported as a sensitivity analysis.
+
+
+%============================================================
+% PANEL: RESEARCH IN CONTEXT (slot even if target isn't Lancet)
+%============================================================
+% Evidence before this study / Added value / Implications.
+
+%============================================================
+% APPARATUS
+%============================================================
+% \section*{Contributors}
+% \section*{Declaration of interests}
+% \section*{Acknowledgments}
+
+\bibliographystyle{unsrtnat}
+\bibliography{refs}
+
+\end{document}
