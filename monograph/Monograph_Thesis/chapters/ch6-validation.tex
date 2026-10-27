@@ -1,18 +1,18 @@
 \chapter{Does the surface hold?}\label{chapter:validation}
- 
+
 \section{Introduction}
- 
+
 The national map left one question open: whether a relationship estimated
 between cities holds at the finer scale inside them. The age split left
 another: whether the gradient it read off the national pooling survives at
 the scale of the single neighbourhood. 
- 
+
 To validate a fitted curve, one holds out part of the data, predicts it from
 the rest, and checks the prediction against what was held back. But the
 surface here is predicted, not fitted: no neighbourhood carries enough deaths
 to fit a curve to its own mortality, which is the whole reason the risk is
 read off the national model instead.
- 
+
 Two tests remain. The first plants a known structure in simulated mortality
 and asks whether the pipeline recovers it---the register on which the case
 time series design was itself validated~\citep{gasparrini2021}. The second
@@ -23,14 +23,21 @@ tracks climate, and the map agrees with heat events already on record. The
 first tests the pipeline where the answer is planted; the second tests its
 output against a world it did not fit to. This chapter takes them in turn 
 and reports where each holds and where it does not.
- 
+
 \section{Sensitivity}
- 
-% [Blocker] Unwritten. Candidates already implied by the drafts:
-%   Standard population --- Canadian 2011 against the source's European.
-%   Stratum specification --- variants A and B (blocked on ruling).
-%   Knot placement --- percentiles against degrees.
-%   Component count $k$ --- spectrum against AIC (blocked on ruling).
-%   Exposure window --- warm season against full year.
-%   Lag window --- 0--21 days.
-% One table, one row per sensitivity, headline quantity re-read under each.
+
+% Unwritten. One table, one row per sensitivity, the headline quantity
+% re-read under each; primary against alternative, from the blueprint:
+%   Lag window --- 0--21 against 0--14 and 0--28.
+%   Exposure metric --- daily mean against daily maximum, apparent temperature.
+%   Cross-basis dimension --- 25 against 9 and 16.
+%   Outcome --- all causes against non-accidental; by cause.
+%   Season --- May to September against full year.
+%   Age --- four bands against pooled.
+%   Sex --- pooled against by sex.
+%   Stratum --- B (weekday inside) against A (weekday as a term), once zero days are padded.
+%   Time check --- none against ns(doy,3) by year, with its trigger.
+%   Humidity --- none against RELH_MEAN or WVP_MEAN as a covariate.
+%   Standard population --- Canadian 2011 against ESP 2013.
+%   CANUE buffer --- 100 m mean of means against the point value.
+%   Map spread --- uncorrected against the a*-corrected surface.

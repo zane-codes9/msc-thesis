@@ -1,24 +1,30 @@
 \chapter{Method}\label{chapter:method}
- 
+
 \section{Introduction}
- 
-A spatial prior asserts that risk varies smoothly across space. Temperature does. Heat vulnerability does not: a tower block without air conditioning abuts detached housing with central air, and the two meet the same heat on the same day \needcite{air conditioning prevalence by housing type --- Canadian source}. The contrast is sharpest at the temperature extremes, which is where the estimand sits, so smoothing is worst exactly where the estimate matters most. This design therefore carries no geographic term. What each area borrows, it borrows through what is measured about it, and areas that share a boundary are neighbours in the data only if they also resemble each other.
- 
-Carrying no geographic term has a price. A design that smooths across neighbours leaves residual spatial pattern in its own output, so structure the model missed can be read off the map it produced. This one cannot: whatever the indicators fail to capture is absorbed into noise and never appears as pattern. The design therefore cannot audit its own coverage, and the audit has to be borrowed---a fit on the same data that does carry a spatial term, whose residual structure is evidence precisely because it comes from a model this one did not build, which Chapter~\ref{chapter:validation} takes up.
- 
+
 Adjacency is not the only way to let risk vary. The curve can be bent directly by a named characteristic---deprivation, say---fitted as an interaction, and one modifier at a time is tractable~\citep{rutten2026effectmod}. Vulnerability does not arrive one at a time. Age structure, income, housing quality and dwelling density move together across a city, and predictors that move together are separated only by the variation where they do not, so their individual coefficients stay unstable however long the model runs. This is an identification problem, not a computational one; more data does not fix it. Asking what income does with housing held fixed is asking about variation the city does not contain, and dimension reduction works by not asking: the correlated bundle is rotated into a few components, and risk is estimated along those.
+
 \section{Data}
- 
-% [Blocker] Unwritten. Four subsections, objects in Stats-templates:
-%   Mortality --- CVSD, study period, geography level (postal code vs
-%     pre-linked DA), age bands, CVSD variable set.
-%   Linkage --- postal code to dissemination area; DMTI single-link file;
-%     the ambiguity a postal code spanning several DAs creates.
-%   Temperature --- CANUE holding, resolution, DA assignment.
-%   Vulnerability indicators --- Census Profile tables, CANUE catalogue,
-%     the candidate set now sitting in Ch4 Table~\ref{tab:indicators}
-%     without sources.
- 
+
+The analysis takes three inputs. The deaths come from the Canadian Vital
+Statistics Death Database and are read inside Statistics Canada's virtual
+Data Lab. The temperature comes from a public gridded product. The
+vulnerability indicators come from the census and from a public
+environmental catalogue. Only the deaths are confidential. Every step that
+touches them runs inside the virtual Data Lab; the temperature and the
+indicators are built outside and brought in, and what comes back out is the
+fitted surface, never a count. The three meet at the dissemination area,
+which is the unit each death record's postal code is converted to.
+
+Each death record carries a date of death, an age, a cause coded to four
+digits, and the postal code of residence. The cause selects the record, the
+postal code places it, and the date and the age count it. The records
+become one series per dissemination area: the number of deaths on each day,
+in four age bands, 0--64, 65--74, 75--84, and 85 and over. The rows are
+grouped by metropolitan area and age band, 41 by 4, 164 groups in all. The
+series holds only the days on which a death occurred, so a dissemination
+area with no death on a day has no row for that day.
+
 \section{The first-stage model}
  
 The first stage fits a temperature--mortality association separately within each census metropolitan area and each of four age groups, using the case time series design of Gasparrini~\citep{gasparrini2021}. The parent model is a conditional Poisson regression of the daily death count on temperature; we use it in the form given by Gasparrini et al.~\citep{gasparrini2022smallarea}, specialized to the CMA as the pooling unit:
@@ -37,17 +43,17 @@ where
 \end{itemize}
  
 The stratum intercepts $\xi_{i(k)}$ compare each day only against other days in the same neighbourhood, season, and year, so that long-term trend, seasonality, and every fixed neighbourhood feature are held constant by construction. The conditional Poisson estimator of Armstrong et al.~\citep{armstrong2014} conditions them out, leaving only $\theta_{c,a}$, $\gamma_{c,a}$, and $\varphi_{c,a}$ to estimate.
- 
-The design works with aggregate data, and one would expect the ecological fallacy to be its central threat. The counts are deaths per neighbourhood per day, never deaths of individuals, and an association read from group counts need not hold for the people inside the group. The threat is real, and the design meets it not by escaping aggregation but by where it identifies the association. The temperature effect is estimated within a place, across its days. The quantity estimated is the conditional probability that a death in a neighbourhood fell on a hotter day rather than a cooler one. Aggregated across strata, that is the answer to whether heat raised the risk of death in that place. The inference is thus about days in a neighbourhood, and it never crosses from the neighbourhood to the person, because it was never a comparison between neighbourhoods to begin with.
- 
+
+The counts are deaths per neighbourhood per day, never deaths of individuals, so the ecological fallacy is the threat a reader expects. The association is estimated within a place, across its days: the quantity is the conditional probability that a death in a neighbourhood fell on a hotter day rather than a cooler one. The inference is about days in a neighbourhood and never crosses to the person, because it was never a comparison between neighbourhoods.
+
 We fit within the metropolitan area, not the dissemination area, because the daily death count in a single dissemination area is too low to identify the association on its own. The cross-basis is specified exactly as in the source~\citep{gasparrini2022smallarea}: a quadratic B-spline in temperature with internal knots at the 10th, 75th, and 90th percentiles of each city's temperature distribution, and a natural cubic spline over lags 0 to 21 days with knots at equally spaced points on the log scale of the lag.
- 
+
 The cross-basis is one object built from two. The quadratic B-spline in temperature spans a five-dimensional space, and the natural cubic spline over the lag window spans another. Their tensor product is the cross-basis: every temperature basis function multiplied by every lag basis function, so that a single coefficient reads the risk of a given temperature at a given lag. Five temperature terms and five lag terms give $5 \times 5 = 25$ coefficients, and these are the $\theta_{c,a}$ of Equation~\ref{eq_firststage}. The temperature basis is built without an intercept. An intercept there would make one temperature function constant, its product with the lag basis would repeat the lag basis exactly, and the cross-basis would be rank-deficient~\citep{gasparrini2014dlnm}.
  
 \section{Reduction}
  
-The first stage returns one fitted association per metropolitan area and age group, carried in the cross-basis coefficients $\theta_{c,a}$ with covariance $\Sigma_{c,a}$. Before pooling, we reduce each association to its overall cumulative form $\theta^{*}_{c,a}$, summing the effect across the lag window into a single curve~\citep{gasparrini2013reduce}.
- 
+The first stage returns one fitted association per metropolitan area and age group, carried in the cross-basis coefficients $\theta_{c,a}$ with covariance $\Sigma_{c,a}$. Before pooling, we reduce each association to its overall cumulative form $\theta^{*}_{c,a}$, summing the effect across the lag window into a single curve~\citepgasparrini2013reducing
+
 The pooling cannot proceed without the reduction. The units entering the second stage are metropolitan areas by age groups, 41 by 4, 164 in all. An unstructured between-unit covariance $\Psi$ grows with the number of curve coefficients: at the full cross-basis of 25 it carries $25 \cdot 26 / 2 = 325$ free parameters against those 164 units, a ratio below one to two that no sample of this size could support. Reducing each association to its overall-cumulative curve takes the coefficients from 25 to 5 and $\Psi$ from 325 parameters to 15, which moves the ratio to about 11 units per parameter. It clears the conventional floor of 10, and it is thin. The number of units is fixed by the country and cannot be raised; the reduction is the only lever, and it has been pulled. The reduction is a linear map applied to each fitted association, exact on both the curve and its covariance, so the uncertainty from the first stage is carried into the pooling rather than approximated~\citep{gasparrini2013reduce}.
  
 \section{The second-stage model}
@@ -63,15 +69,13 @@ where
   \item $\theta^{*}_{c,a}$ is the reduced cumulative curve for metropolitan area $c$ and age group $a$;
   \item $X_{c,a}$ is the design matrix of fixed-effects meta-predictors, holding age indicators and the composite vulnerability indicators;
   \item $\beta$ is the vector of fixed-effects coefficients;
-  \item $Z_{c,a}\,b_{c,a}$ are between-area random effects, retained only if a multivariate Cochran's $Q$ test calls for them~\citep{gasparrini2013reduce, sera2019};
+  \item $Z_{c,a}\,b_{c,a}$ are the between-area random effects, a random intercept on the metropolitan area with unstructured covariance $\Psi$~\citep{sera2019mixmeta}
   \item $\varepsilon_{c,a}$ is the sampling error carried forward from the first stage, with (co)variance $V^{*}_{c,a}$.
 \end{itemize}
  
 The meta-predictors in $X_{c,a}$ are not the raw neighbourhood variables but a small number of composite indicators built from them by principal component analysis, following the source~\citep{gasparrini2022smallarea}. We construct these in Chapter~\ref{chapter:vulnerability}.
- 
+
 Three checks confirm the pooled model is internally sound before any neighbourhood is read from it. The first is convergence: the estimate is taken only once the restricted likelihood has converged. The second is that $\hat{\Psi}$ is a covariance, confirmed by Cholesky decomposition, since a matrix that fails this test describes no distribution and cannot be sampled from downstream. The third is residual heterogeneity: after the vulnerability indicators and age have explained what they can, the $I^{2}$ statistic measures how much variation between units remains.
- 
-Choosing the number of components needs one point of care. Each candidate count is a different set of fixed-effects meta-predictors, and the Akaike information criterion compares fixed-effects specifications only when the models are fitted by maximum likelihood. Under restricted maximum likelihood the comparison is not licensed, because the restricted likelihood conditions on the fixed effects it is meant to compare~\citep{sera2019}. We therefore fit the candidate models by maximum likelihood, select the component count that minimises their AIC, and refit the chosen model by restricted maximum likelihood to estimate its variance components.
  
 \section{Downscaling to the neighbourhood}
  
@@ -80,32 +84,86 @@ The pooled model is fitted at the metropolitan scale but written in terms of nei
   \hat{\theta}^{*}_{d,a} = X_{d,a}\,\hat{\beta},
 \end{equation}
 and read the result as the area's temperature--mortality curve --- the prediction given by equation 5 of \citet{sera2019}. Nothing is fitted at the dissemination area; the area supplies its indicators and receives a curve.
- 
-A mixed model can do more than evaluate the population relationship at a unit's covariates. It can add back the unit's departure from that relationship---the best linear unbiased predictor,
-\begin{equation}
-  \hat{\theta}^{*}_{d,a} = X_{d,a}\,\hat{\beta}
-    + Z_{d,a}\,\hat{\Psi}\,Z_{d,a}^{\top}\,\hat{\Sigma}_{d,a}^{-1}
-      \!\left(\tilde{\theta}^{*}_{d,a} - X_{d,a}\,\hat{\beta}\right),
-\end{equation}
-the population prediction corrected by the unit's own residual, weighted by how much that residual can be trusted~\citep{sera2019}. But the correction needs the residual, and the residual needs a curve $\tilde{\theta}^{*}_{d,a}$ fitted at the dissemination area itself. The design has no such curve: a dissemination area carries too few deaths to fit the first stage, which is the whole reason the estimate is borrowed from the metropolitan scale to begin with. With nothing to correct against, the downscale is the fixed-effect prediction alone.
- 
-Reading the downscale as the fixed-effect prediction fixes the map's character. With no residual to trust, every dissemination area is pulled fully onto the population relationship, and its curve differs from its neighbour's only as their indicators differ. The surface is therefore smoother than the truth it estimates. Two areas that differ sharply in risk but only mildly in measured vulnerability are drawn together on the map, and the spread between them is understated~\citep[expr.~7.7]{VM_TODO}. This is shrinkage, and it is a property of the estimator.
- 
+
+A mixed model could also add back the unit's own departure from the population relationship, the best linear unbiased predictor~\citep{sera2019mixmeta}. But the correction needs the residual, and the residual needs a curve $\tilde{\theta}^{*}_{d,a}$ fitted at the dissemination area itself. The design has no such curve: a dissemination area carries too few deaths to fit the first stage, which is the whole reason the estimate is borrowed from the metropolitan scale to begin with. With nothing to correct against, the downscale is the fixed-effect prediction alone.
+
+Reading the downscale as the fixed-effect prediction fixes the map's character. With no residual to trust, every dissemination area is pulled fully onto the population relationship, and its curve differs from its neighbour's only as their indicators differ. The surface is therefore smoother than the truth it estimates. Two areas that differ sharply in risk but only mildly in measured vulnerability are drawn together on the map, and the spread between them is understated\needcite{Verbeke and Molenberghs, expr.~7.7; no tracker row}. This is shrinkage, and it is a property of the estimator.
+
 From each predicted curve we take the minimum-mortality temperature as the reference, and summarize the danger of heat as the relative risk at a high temperature percentile against that reference. Doing this for every dissemination area produces the national surface reported in Chapter~\ref{chapter:nationalmap}.
- 
-\section{Standardization}
- 
-% [Blocker] Unwritten. Source text is the third paragraph of Ch3
-% §Burden, which currently specifies this method inside a results
-% chapter: 2011 Canadian standard population, Canadian rather than the
-% source's European, European carried in the appendix as sensitivity.
-% Once drafted here, that paragraph reduces to a pointer.
+
+\section{Standardization}\label{sec:standardization}
+
+The risk the downscale returns is a ratio. It says how much risk rises on a
+hot day, measured against the neighbourhood's own minimum-mortality
+temperature. It does not say how many people that rise falls on. A count of
+deaths appears only when the ratio is applied to the deaths a neighbourhood
+already records, and those deaths carry its age structure with them.
+
+Heat kills the old more readily than the young. A neighbourhood with many
+elderly residents records more heat deaths than a younger neighbourhood at
+the same risk. A map of raw counts is a map of where the old live. A crude
+rate does not fix this: dividing by the population removes its size, not its
+age.
+
+Direct standardization holds the rates and replaces the structure. We keep
+the heat-attributable rate observed in each age band of a dissemination area
+and reweight those bands to a structure every area shares. The result is
+what the neighbourhood's heat mortality would be if its residents fell into
+the bands in the proportions the standard sets. Two areas now differ only in
+their rates.
+
+The structure we use is the 2011 Canadian standard
+population.\footnote{Statistics Canada, catalogue 84-548-X.} The source
+analysis standardizes to the 2013 European Standard
+Population~\citep{gasparrini2022smallarea}. The rate here is read against
+Canadian neighbourhoods and reported to Canadian institutions, which publish
+their own standardized rates on the Canadian standard. The European standard
+runs in the appendix as a sensitivity, which also sets our surface against
+the England and Wales one on the same weights.
+
+We standardize at the dissemination area and aggregate the standardized
+rates upward. Standardizing a metropolitan area first and apportioning the
+result downward would give every neighbourhood in it the same age structure,
+flattening the variation this step exists to recover.
+
+Two properties of the rate follow, neither of them a finding. The rate is not
+a count of deaths and cannot be read as one: it is what the neighbourhood
+would record under an age structure every area shares, and its use is
+comparison across areas. It also sets age aside rather than examining it,
+which is the right choice for reading the neighbourhood on its own and the
+reason Chapter~\ref{chapter:agefork} reads the surface separately within each
+age band.
+
+\section{Reading the curve}\label{sec:readingthecurve}
+
+Each neighbourhood's curve carries two kinds of information, and we read them separately. The first is the shape of the curve: where risk is lowest, and how steeply it climbs into the heat. The second is the burden the curve implies: how many deaths the heat actually adds.
+
+\subsection{Shape}
+
+The shape of a curve is anchored by its minimum-mortality temperature, the temperature at which risk is lowest. Above it, risk climbs; the minimum-mortality temperature is the reference every heat risk is measured against. We also record its percentile in the local temperature distribution, the minimum-mortality percentile, which places the reference within the climate the neighbourhood actually experiences: the same 18~\textdegree C is a hot day in one city and a mild one in another, and the percentile is what makes the reference comparable across them.
+
+We find the minimum-mortality temperature for each dissemination area. A downtown neighbourhood and a suburban one in the same city can differ in their minimum by several degrees, and a single city-wide reference would misplace the danger for both. The reference is found in two passes: the first predicts the curve at the city-median temperature and locates its minimum; the second re-centres the curve on that minimum and reads the risk from there~\citep{gasparrini2022smallarea}. Resolving the reference to the dissemination area is what keeps these neighbourhood-scale differences from being averaged into a single city figure.
+
+\subsection{Burden}
+
+The shape of a curve says where risk is lowest; the burden says what the heat costs. We read it in three steps. The first is the relative risk on a hot day: the risk at the 99th percentile of the neighbourhood's temperature, measured against its own minimum-mortality temperature. This is the multiplier the curve places on a hot day, relative to the day the neighbourhood is safest.
+
+The relative risk is a ratio, not a count: it carries no population, so it cannot by itself say how heavy the burden is. The second step converts it into deaths: the number the heat adds over the warm season, and the fraction of all deaths that number represents.
+
+The third step standardizes that rate to one age structure, as \S\ref{sec:standardization} sets out.
+
+\subsection{Uncertainty}
+
+Every indicator on the map is read from the same national coefficients, so the uncertainties attached to them are not independent. Two neighbourhoods predicted from the same pooled slope share the uncertainty in that slope; the error in one is bound to the error in the other. A confidence interval computed for each neighbourhood on its own would treat these shared errors as if they were separate, and double-count the one uncertainty they hold in common.
+
+We therefore propagate the uncertainty once, at the level it actually lives: the coefficients of the pooled model. Drawing repeatedly from the fitted distribution of those coefficients and carrying each draw through the downscaling gives a set of national surfaces whose spread reflects the single shared source of error, without counting it once per neighbourhood~\citep{masselot2025extensions}. This is why the second-stage covariance had to be a proper covariance: it is the distribution these draws are taken from, and a matrix that failed the positive-definite test could not be sampled.
+
+It is also why the maps carry no marks of significance. With several thousand neighbourhoods drawn through one shared slope, per-neighbourhood significance would invite the eye to read individual areas as separately established, which they are not. The uncertainty is a property of the surface as a whole, not of each neighbourhood apart from the rest, and the map is drawn to show the risk, not to certify each area against a threshold.
  
 \section{Discussion}
  
 The downscale assumes that the relationship between neighbourhood characteristics and risk, estimated at the metropolitan scale, holds at the finer scale of the dissemination area. We test that assumption in Chapter~\ref{chapter:validation}.
- 
+
 Two limits sit on the downscaled curve, and they are not the same kind. The first is the shrinkage just described: the surface is smoother than the truth, and the validation in Chapter~\ref{chapter:validation} can measure how much, since expression~(7.7) says what to expect. The second was fixed before the pooling ever ran. Reducing each association to its cumulative curve summed the effect across the lag window into a single number, and the timing inside that window did not survive the sum. The downscaled curve carries how much heat raises risk; it cannot carry whether the risk falls on the same day in one neighbourhood and three days later in another. No validation recovers this, of course---the information was gone before the second stage began.
- 
+
 In the next chapter we apply the design across Canada's major cities and present the first neighbourhood-level map of heat-related mortality risk for the country.
- 

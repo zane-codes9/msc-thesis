@@ -1,89 +1,45 @@
-% ==========================
-% Chapter 5 - reading the surface across age
-% rib chapter (about ~12pp). It follows up on what was promised in Ch3: age taken back up. 
-% claim: separability, aka age its own axis because vuln score is age-invariant by construction, so the split recovers a gradient the profile can't see
- 
-% §1 "if we want X, problems": want who, map standardizwe age away
-% 2: Why age is its own axis - separability. DA-PCA invariant across bands
-% §3 THe four age groups - 4 bands, 165 units./ Point back to CH3 identification 
-% §4 the gradient - sim-bracketed illustration; flagged not real yet
-% §5 what the reading leaves open - five beat close, hand to validation by what it does 
- 
- 
 \chapter{Reading the surface across age}\label{chapter:agefork}
- 
+
 \section{Introduction}
- 
+
 The map read heat--mortality risk with age standardized away. Standardization was the right choice for reading the neighbourhood: it set every neighbourhood to a common age structure, so that what varied across the map was the place not its age. But the same step that isolates the neighbourhood discards the age structure it standardized over, and age is not a nuisance here.
- 
+
 This chapter takes age back up. We split the design by age group and read the heat--mortality association separately within each, recovering the gradient the standardized map combined into one number.
- 
+
 \section{Why age is its own axis}
- 
+
 A neighbourhood's vulnerability profile does not change with age. The profile is built from what a place measurably is---its population structure, its housing, its greenness---and those inputs are the same whether we read the risk for the youngest band or the oldest. The principal components that summarize the profile are therefore identical across the four age groups: one score per neighbourhood, carried unchanged into every band. 
- 
+
 This is what makes age a separate axis. If age modified risk only
 through the profile, the split would recover nothing the map had not
 already shown: the age groups would differ only where the profile
 differed, and standardizing age away would have lost no signal worth
 recovering.
- 
- 
-\section{The four age groups}
- 
-We split the population into four age groups: under 65, 65 to 74, 75 to
-84, and 85 and over. The groups are cut where the mortality rate turns---
-nearly flat below 65, then rising steeply enough that each decade past it
-carries a different risk of dying in the heat. The oldest group is set
-apart because its rate runs several times that of the band below.
-% [PH: "several times" is the simulated slope; replace with real 85+/75-84 rate ratio when CVSD lands.]
- 
-Four groups across 41 metropolitan areas give 164 units to pool, and that
-164 units identify a five-parameter curve was settled in
-Chapter~\ref{chapter:nationalmap}. What the split changes is the unit.
-Each unit is now a city read at one age, not a city, and the pooled
-association is free to bend across the age groups rather than hold to one
-national shape.
- 
+
+
 \section{The gradient}
- 
-With the unit redefined, the second stage estimates a separate pooled
-curve for each of the four age groups, and downscaling reads each curve at
-every dissemination area in turn. The output is four national surfaces
-where the map held one: the same neighbourhood now carries a
-heat--mortality risk for the under-65 population and a different one for
-the 85-and-over, and the difference between them is the age gradient the
-standardized map combined away.
- 
-On simulated mortality, the pipeline recovers a known gradient. The
-simulation was built with an age slope set in advance: a baseline
-mortality rate that climbs across the four bands. The fitted surfaces
-return that climb. Simulated deaths rise from the youngest group to the
-oldest by roughly an order of magnitude, in the proportion the simulation
-specified.
-% [SIM ONLY: Toronto sim deaths 10,233 (0–64) → 77,210 (85+), 5 warm-seasons,
-%  seed 42. Illustration of recovery, NOT a finding.]
-This is a recovery check, not a result. It shows the split reads an age
-gradient when one is present, and says nothing about the gradient Canada
-actually carries.
- 
-The real gradient enters with the mortality data. The curves in this
-chapter are fitted to simulated counts; the magnitude of the age
-difference, and whether the oldest group's curve bends more steeply into
-the heat than the youngest, are quantities the real run returns and this
-draft leaves open.
-% [Blocker: real per-band gradient — magnitude + old-vs-young steepness —
-%  pending CVSD. Populate the four-surface comparison here.]
- 
+
+Each unit of the second stage is now a metropolitan area read at one age,
+so the pooled association is free to bend across the four age groups, and
+downscaling reads each group's curve at every dissemination area in turn.
+The output is four national surfaces where the map held one: the same
+neighbourhood now carries a heat--mortality risk for the under-65 population
+and a different one for the 85-and-over, and the difference between them is
+the age gradient the standardized map combined away.
+
+The magnitude of the age difference, and whether the oldest group's curve
+bends more steeply into the heat than the youngest, are quantities the real
+run returns and this draft leaves open.
+
 \section{What the reading leaves open}
- 
+
 There is, of course, no age gradient read here that the data identified on
 its own. Each band's curve is read off the pooled national model, the same
 borrowing the map rested on, and the oldest group leans on it hardest.
 85-and-over is the thinnest band in every city, so the age read is most
 borrowed exactly where the risk is highest. The split does not lift this
 limit; it carries it, one curve per age group.
- 
+
 What the split does deliver is the age axis itself. The standardized map
 held a neighbourhood's risk to a single number; reading it across the four
 groups recovers the difference that number combined away, and lets the
