@@ -1,0 +1,153 @@
+Ch1: \chapter{Heat mortality and the neighbourhood}\label{chapter:problem}
+ 
+\section{Introduction}
+ 
+Hot days kill, and the deaths are hard to see. The dying happens
+indoors, mostly among people already ill, so each death has a nearer
+cause to be filed under. The days themselves are multiplying: the
+annual average temperature over Canadian land has risen 1.7\,°C since
+1948, roughly double the global increase, and the projections hold
+that ratio under every emissions scenario\needcite{CCCR ---confirm
+1.7 since 1948 and the double-the-global ratio}.
+ 
+The death record gives a date, a cause, and a place. It does not give a
+line that says heat. The toll is therefore estimated rather than counted:
+how many people died across the hot days, against how many would have
+been expected to die had those days been cooler.
+ 
+A city is not one place under heat. Its built surfaces hold the day's
+warmth unevenly, and a summer night can run several degrees warmer in one
+neighbourhood than in another. The people who meet that night differ too.
+Age, illness, income, and access to cooling vary from block to block, and
+each changes what a given temperature does.
+ 
+The comparison is run over an area, and the area cannot be small. It needs
+enough deaths across enough hot days for the difference to show against
+ordinary variation. Estimated over a whole city, the toll is one number,
+and the differences between its neighbourhoods are averaged into it rather
+than resolved by it.
+ 
+\section{Heat mortality as it is measured}
+ 
+That expectation comes from a curve. Over a place's full range of
+temperature, deaths fall to a minimum at one point and rise on either side
+of it, gradually into the cold and steeply into the heat. The temperature
+at that floor is the minimum-mortality temperature. It sits near the warm
+end of what a place is accustomed to, so heat begins to kill at a lower
+temperature in a cool city than in a warm one.
+ 
+\begin{figure}[ht]
+\centering
+\caption{The temperature--mortality association, drawn schematically.}
+\label{fig:erf}
+\end{figure}
+ 
+A hot day keeps killing after it ends. The risk it carries decays as the
+days pass; the deaths owed to one hot day are spread across the days that
+follow it. This delay is the lag, and the effect of a temperature is that
+risk summed over the lag window.
+ 
+The curve differs between cities, and inside a city, between the people
+who live there. A characteristic that changes what a given temperature
+does is an effect modifier. Age is among the strongest. Estimates are
+therefore made separately by age group rather than pooled across a whole
+population.
+ 
+In Canada the scale has been coming down. Ontario has been split into
+fourteen health regions, each fitted separately and pooled to a provincial
+curve~\citep{bai2017coronary}. Twelve cities have been fitted one at a
+time, returning a single heat effect each~\citep{quick2024twelvecities}.
+In Montreal, Toronto, and Vancouver the estimate has been taken below the
+city, to the census tract~\citep{quick2025smallarea}. That work covers
+three cities and five summers, and names smaller areal units and longer
+records as what remains.
+ 
+A neighbourhood carries too few deaths for a curve to be fitted to it
+alone. The curve must therefore be borrowed, and the field has split over
+where to borrow it from. One camp borrows from adjacency: the coefficients
+of the curve are given a spatial prior, so an area with thin counts is
+drawn toward the areas around it~\citep{quijalzamorano2024sbdlnm,
+rutten2026spatialvarying,rutten2026effectmod,quick2025smallarea}. The
+other borrows from resemblance: curves are fitted where the counts hold
+up, pooled against measured characteristics of those places, and read back
+at an area from its own~\citep{gasparrini2022smallarea,
+masselot2025extensions,vazquez2025norway,dimaso2025italy}. The first is
+fitted in one stage, the second in two. Sampling the one-stage model by
+Markov chain is slow---seventy-three Barcelona neighbourhoods took
+several days---and that cost is what held the Canadian small-area work
+to three cities. Approximating the fit instead has since removed it:
+391 Sicilian municipalities take
+minutes~\citep{rutten2026spatialvarying}.
+ 
+Those area characteristics are also mapped on their own. A vulnerability
+index takes a set of small-area variables, reduces them by principal
+components, and sums the components into one score per area. Three themes
+recur across these indices---deprivation, age, and isolation---with
+measures of the built and green environment entering
+alongside~\citep{conlon2020hvipca,mallen2019dallas,sera2019urban,
+gasparrini2022smallarea,quick2025smallarea}. In its standard construction
+no health outcome enters the score, so it ranks neighbourhoods by
+composition rather than by risk.
+ 
+The score has not been shown to predict mortality. Where indices have been
+scored against a mortality outcome they have explained little or none of
+it, and the result is cited as grounds for treating them as screening
+tools rather than as estimates~\citep{conlon2020hvipca,mallen2019dallas}.
+Neither test fitted a temperature--mortality association at the scale it
+mapped: one scored the index against the share of deaths falling on hot
+days, the other against deaths modelled from a single citywide risk curve.
+ 
+\section{The apparatus}
+ 
+The expectation comes from the place itself. Days are grouped into
+strata---one neighbourhood, one season, one year---and each day's count is
+compared only against the other days in its own stratum. Whatever holds
+steady across a stratum drops out of the comparison without ever being
+measured. The weather does not, and that is what the model is asked about.
+The design is the case time series, and the model fitted to it is a
+conditional Poisson regression~\citep{gasparrini2021,armstrong2014}.
+ 
+The curve is fitted within one city at a time, where the deaths are
+numerous enough to support it. The fitted curves differ from city to
+city, and the differences track what the cities are: their climate,
+the age of their people, the conditions they live in. A second
+regression takes the fitted curves themselves as its data points and
+estimates that relationship---a meta-regression, with cities as the
+units and their measured characteristics as the predictors. A
+neighbourhood then enters with the same characteristics, measured at
+its own scale, and receives the curve its profile implies. Nothing is
+fitted to its deaths; the estimate is borrowed from every city at
+once. The apparatus exists at national scale: England and Wales,
+mapped to 34{,}753 small areas from curves fitted in 348
+districts~\citep{gasparrini2022smallarea}.
+ 
+\section{Aims}
+ 
+This thesis resolves heat-related mortality risk to the neighbourhood,
+for all of Canada's 41 census metropolitan areas at once. The
+instrument is the apparatus just described: curves fitted where the
+deaths support them, pooled against what the cities measurably are, and
+read back at each dissemination area from its own profile. What is new
+is the country, the scale the risk is returned at, and the design
+choices the framework leaves open.
+ 
+Four questions organize the work. How much does the risk vary from
+one neighbourhood to the next? What is a neighbourhood made of that
+moves its risk? For whom is the risk highest? And can an estimate
+borrowed from the national sample be trusted at the scale it is
+spent? The first three are what the resolution is for. The fourth is
+what it costs: every curve on the map is a prediction, and a
+prediction earns its map only by being tested.
+ 
+Chapter~\ref{chapter:method} builds the apparatus: the within-city
+model, the pooling across cities, and the downscale that returns a
+curve for every dissemination area. Three chapters then read the
+surface it produces. Chapter~\ref{chapter:nationalmap} maps the risk
+across all 41 metropolitan areas and answers how much it varies;
+Chapter~\ref{chapter:vulnerability} builds the vulnerability profile
+and answers what a neighbourhood is made of that moves it;
+Chapter~\ref{chapter:agefork} splits the surface by age and answers
+for whom it is highest. Chapter~\ref{chapter:validation} takes up the
+fourth question, testing the predicted surface against simulation
+where the truth is planted and against the record where it is not.
+Chapter~\ref{chapter:discussion} weighs what the answers establish.
