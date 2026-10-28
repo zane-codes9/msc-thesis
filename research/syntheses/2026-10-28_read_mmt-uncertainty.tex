@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\begin{document}
+
+\section*{2026-10-28\_read\_mmt-uncertainty}
+
+\begin{tabular}{@{}p{0.14\textwidth}p{0.82\textwidth}@{}}
+QUESTION & What does the uncertainty in the minimum mortality temperature do to the relative risks centred on it? \\[4pt]
+READ & Lee, Kim, Hwang, Zanobetti, Schwartz and Chung 2017, ``Monte Carlo simulation-based estimation for the minimum mortality temperature in temperature-mortality association study'', main text and Additional file~1. \\[4pt]
+FINDING & Centring on a fixed minimum barely moves the relative risk but breaks its interval. \\
+\end{tabular}
+
+\subsection*{Finding}
+
+The minimum's uncertainty matters for the RR mainly through the width of its interval.
+We went in thinking the tilt from centring on a noisy minimum was unmeasured and was the main harm.
+Lee and colleagues measure it in simulation, and it is upward and small.
+They planted four true curves and carried each simulated minimum into the RR.
+In the U-shape the heat RR is high by 0.0005 on a true 1.079.
+In the rotated S, where the true minimum sits just under the 99th percentile, it is high by 0.027 on a true 1.015 without a window, and by 0.003 with the 1st--99th window.
+With the minimum fixed inside 1st--99th, the cold RR interval covers the truth 58.4\% of the time when the curve has a long flat floor.
+The heat RR interval covers it 85.8\% of the time when the minimum sits near the ceiling.
+Keeping only the simulated draws whose minimum falls inside 1st--99th brings heat coverage back to 98.1--100\%.
+These are simulation results on one-dimensional moving-average curves, not on a 21-lag cross-basis.
+
+\subsection*{Connections}
+
+\begin{enumerate}[leftmargin=*]
+\item The 1st--99th window fixes the point and costs the interval.
+Tob\'ias 2017 introduced it to keep small-city minima off the tails.
+England and Wales 2022 shows its ceiling binding, with heat RR at 1.000 in the top LSOA of every age group.
+Lee 2017 prices it in simulation, where the same window drops coverage to 58.4\% on a floor and 85.8\% near the ceiling.
+\item The window is chosen in two families and argued in neither.
+The Lancet 2015, England and Wales 2022, Tob\'ias 2017 and Lee 2017 search 1st--99th.
+Chen 2025 and \'Eric's Qu\'ebec script search 25th--90th.
+\item Every paper that searches a fitted curve searches a shrunk curve, never the raw first-stage fit.
+The Lancet 2015 and Lee 2017 search BLUPs, and England and Wales 2022 searches the downscaled LSOA curve.
+\end{enumerate}
+
+\subsection*{My work}
+
+The minimum in \texttt{fit\_das} is found the way the field finds it, the lowest point inside 1st--99th, and nothing carries its uncertainty forward.
+A CMA-level RR reported against that fixed minimum will have intervals that are too narrow wherever the curve has a flat floor or a minimum near the 99th.
+
+\subsection*{Contradictions}
+
+None.
+
+\subsection*{Corrections}
+
+Going in, the upward tilt was taken as the main harm and no RR in the set was recomputed with the minimum's uncertainty.
+Lee 2017 recomputes the RR in every draw, shows the tilt is small, and shows the larger harm is interval coverage.
+
+\subsection*{Questions}
+
+\begin{enumerate}[leftmargin=*]
+\item Do the 500 Monte Carlo draws behind England and Wales 2022's empirical intervals re-find the minimum in each draw, or hold it fixed?
+Read the supplement's uncertainty annexe, or \texttt{02.fcastcomp.R} in Mistry's repository.
+\item How far does coverage fall for a 21-lag cross-basis reduced to five coefficients, rather than a moving average?
+Measure it in the outside simulation by adding the draw-and-refind step to \texttt{fit\_das} and scoring coverage against the planted p80 minimum.
+\item Does Tobias et al.\ 2021 give an argument for 25th--90th that the 1st--99th papers lack?
+\end{enumerate}
+
+\subsection*{People}
+
+Whanhee Lee and Yeonseung Chung designed the study and wrote it, per the contributions line.
+Chung sits in mathematical sciences at KAIST.
+Ho Kim, at Seoul National University's school of public health, appears on the Asian multi-city temperature papers the article cites.
+Zanobetti and Schwartz at Harvard supplied the 135 US cities, the same data as the Lancet 2015 study.
+
+\end{document}

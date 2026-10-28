@@ -9,7 +9,15 @@ Original file is located at
 # Stats read ledger
 last updated 2026-10-02
 
+### 2026-10-28_mmt-uncertainty_lee2017_tracker-plan
+
+Read Lee, Kim, Hwang, Zanobetti, Schwartz and Chung 2017, Monte Carlo simulation-based estimation for the minimum mortality temperature, main text and Additional file 1. One row appended to the papers sheet. Synthesis written: centring on a fixed minimum barely moves the relative risk but breaks its interval, measured against four planted curves. The open state was replaced. The claim that one ρ governs every cross-basis coefficient held for the whole adjacency camp; it now holds for Leroux only, since Chen 2025 gives each coefficient its own field. The validation paragraph gained Chen, scored against SB-DLNM on the same data, and Wilson Kemsley, the one row scored against deaths it never saw. The minimum paragraph said the uncertainty in the minimum was never carried into the RR; it now says the tilt is upward and small and the cost is coverage, 58.4% on a flat floor and 85.8% near the ceiling under a fixed minimum. The handbook paragraph now carries its two rules, graph of model-predicted values and map region by region, with no ruling on which governs a predicted surface. The question of the CVSD minimum count and population floor was answered as far as the files allow: the numbers sit with the Analyst, so an email was drafted and the question went to the backlog as a handoff. The question whether a coefficient-specific ρ exists in the adjacency camp is answered by Chen and narrowed to heavy tails and cross-coefficient correlation. The question about the minimum's window became three: which curve CanVS searches, whether the England and Wales draws re-find the minimum per draw, and whether Tobias 2021 argues the 25th–90th window. The shelf gained Tobias 2021, the England and Wales uncertainty annexe, Mistry's forecast script and Chen's code. Still owed: the 10-09 synthesis, which was never written. The tracker overhaul was brainstormed and approved: three tabs, papers, books, tools, on one column set each; thirteen asthma and ED rows to an archive tab; five duplicate pairs merged; bracketed taste cells finalised; placeholders removed; Role relabelled on five words; Bai 2017 and Choi 2023 undecided. The build waits on the papers sheet past Bhaskaran and the software and people sheets.
+
 ## Log
+
+### 2026-10-09_mmt-window-handbook-scan
+
+We checked the three handoff papers at source. The Lancet 2015 main text and supplement gave appends to its row. Tobías 2017 got a new row, with the eAppendices still missing. The England and Wales paper and supplement gave appends to its row and to the tutorial row. We read Gasparrini's CTS-smallarea code whole and the DAD Vetting Handbook in its model, graph, map, geography, rounding, residual and request sections. In the vDL we scanned the shared workspace and the transfer folder by file name, read two headers and one zip listing, and searched three programs for the age bands. We found none. Three shelf rows were added. In the open state, the release paragraph was rewritten from unread to read. The Stage 1 paragraph now says both routes drop strata with no deaths, and that Gasparrini's code calls leaving them in a bias. A new paragraph covers the 1st–99th window, and the ceiling was added to the recurring paragraph. Open 1 moved from the handbook to the Analyst, open 4 from the field's window to ours and the tilt in the relative risk, open 6 was traced one step, and open 11 was added for Éric. Twenty-seven changes wait in a pending tab for the next merge.
 
 ### 2026-10-02_vdl-tools-capture-shelf
 
@@ -26,10 +34,17 @@ thirteen tools rows into the tracker: vDL environment, Lulu's Step 1 object, mor
 - a row drafted → run the second pass before showing it; the first exists to be demolished
 - a verbatim cell → raw only; what is missing goes to open items
 - a source path → where the thing lives, never the document that carried it
+- a choice made in every paper with no reason given → look for the oldest tutorial or brief report; the argument, if any, lives there (tobias2017mmt)
+- a rule found in a statcan document → check which data it governs before carrying it (the covariance ban was the economic handbook's, not the health one)
+- a method claim about published code → read the code; the rules that matter sit in the # NB: comments, not in the paper (CTS-smallarea)
+- a paper never writes its bias formula → fix the sign from the one scenario that cannot close the other way before reading any bias column [lee2017mcmmt]
 
 ## Notes
 
 - put a day down to explore an environment before assuming what it lacks; five weeks went to three gates that were never doors [2026-10-02]
 - reuse a template that already works before inventing one; infer it from the files that exist [2026-10-02]
 - what cannot be read off one row is the only thing worth writing above the rows [2026-10-02]
+- a supplement is not the paper; a parameter missing from one may sit in the other [2026-10-09]
+- a reference value typed into code is a reading off a curve, not a search; never cite it as a window [2026-10-09]
+- a paper cannot be retained whole; what can be retained is five lines, and they are the template for reading it in fifteen minutes: the question, from the last sentence of the abstract's background; the answer, from the one table or figure that answers it, read caption first then the single row or panel that matches; the comparison, from the methods, only enough to know what that table compares; the catch, from the first sentence of the limitations; then say the five back. the row holds everything else
 """
